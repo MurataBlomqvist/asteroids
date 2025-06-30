@@ -1,5 +1,12 @@
 import pygame
-from constants import PLAYER_RADIUS, PLAYER_TURN_SPEED, PLAYER_SPEED
+from shot import Shot
+from constants import (
+    PLAYER_RADIUS
+    , PLAYER_TURN_SPEED
+    , PLAYER_SPEED
+    , PLAYER_SHOOT_SPEED
+    , PLAYER_SHOOT_COOLDOWN
+)
 from circleshape import CircleShape
 
 class Player(CircleShape):
@@ -7,6 +14,7 @@ class Player(CircleShape):
     def __init__(self, x, y):
         super().__init__(x, y, PLAYER_RADIUS)
         self.rotation = 0
+        self.shooting_timer = 0
 
     def draw(self, screen):
         pygame.draw.polygon(screen, "white", self.triangle(), 2)
@@ -18,6 +26,16 @@ class Player(CircleShape):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
         self.position += forward * PLAYER_SPEED * dt
 
+    def shoot(self, dt):
+        # weapon cooldown is set to PLAYER_SHOOT_COOLDOWN constant
+        if self.shooting_timer <= 0:
+            shot = Shot(self.position.x, self.position.y)
+            shot.velocity += pygame.Vector2(0, 1).rotate(self.rotation) * PLAYER_SHOOT_SPEED
+            self.shooting_timer = PLAYER_SHOOT_COOLDOWN
+
+            
+
+    
     def update(self, dt):
         keys = pygame.key.get_pressed()
 
@@ -29,6 +47,11 @@ class Player(CircleShape):
             self.move(dt)
         if keys[pygame.K_s]:
             self.move(-dt)
+        if keys[pygame.K_SPACE]:
+            self.shoot(dt)
+        
+        # decrease the weapon cooldown everytime sprite updates
+        self.shooting_timer -= dt
 
     def triangle(self):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
