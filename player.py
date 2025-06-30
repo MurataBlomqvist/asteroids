@@ -26,7 +26,7 @@ class Player(CircleShape):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
         self.position += forward * PLAYER_SPEED * dt
 
-    def shoot(self, dt):
+    def shoot(self):
         # weapon cooldown is set to PLAYER_SHOOT_COOLDOWN constant
         if self.shooting_timer <= 0:
             shot = Shot(self.position.x, self.position.y)
@@ -48,7 +48,7 @@ class Player(CircleShape):
         if keys[pygame.K_s]:
             self.move(-dt)
         if keys[pygame.K_SPACE]:
-            self.shoot(dt)
+            self.shoot()
         
         # decrease the weapon cooldown everytime sprite updates
         self.shooting_timer -= dt
